@@ -18,8 +18,7 @@ let jump = {
 
 let gameStarted = false;
 let gameOver = false;
-
-
+let gameWin = false;
 
 function ground() {
   strokeWeight(0);
@@ -164,6 +163,20 @@ function YOU_DIED(x, y, sentence) {
   text("Press R to Restart", x + 500, y + 220);
 }
 
+function YOU_WON(x, y, sentence) {
+  fill(0);
+  rect(x, y, 1000, 200);
+
+  fill(0, 255, 0);
+  textSize(100);
+  textAlign(CENTER, CENTER);
+  text(sentence, x + 500, y + 100);
+
+  fill(255);
+  textSize(30);
+  text("Press R to Restart", x + 500, y + 220);
+}
+
 function resetGame() {
   position = { x: 0, y: 50 };
   jump = {
@@ -178,6 +191,7 @@ function resetGame() {
   };
   gameStarted = false;
   gameOver = false;
+  gameWin = false;
 }
 
 function draw() {
@@ -187,6 +201,8 @@ function draw() {
     startScreen(0, 400, "PRESS W TO START");
   } else if (gameOver) {
     YOU_DIED(0, 400, "YOU FELL");
+  } else if (gameWin) {
+    YOU_WON(0, 400, "YOU LANDED SAFELY");
   } else {
     ground();
     character(position.x, position.y);
@@ -201,10 +217,11 @@ function draw() {
       if (jump.velocityY > jump.maxFallSpeed) {
         gameOver = true;
       } else {
-        position.y = jump.maxY;
-        jump.velocityY = 0;
-        jump.jumpCount = 0;
+        gameWin = true;
       }
+      position.y = jump.maxY;
+      jump.velocityY = 0;
+      jump.jumpCount = 0;
     }
 
     if (keyIsDown(65)) {
@@ -229,9 +246,8 @@ function keyPressed() {
   }
 
   if (keyIsDown(82)) {
-    if (gameOver) {
-      resetGame(); // Reset if game = gameOver
+    if (gameOver || gameWin) {
+      resetGame(); // Reset if game = gameOver/win
     }
   }
 }
-
